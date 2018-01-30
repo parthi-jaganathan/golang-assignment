@@ -1,6 +1,7 @@
 package httphandler
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"../utils"
+	"./stats"
 )
 
 type errorResponse struct {
@@ -43,18 +45,34 @@ func setResponseCodeAndDefaultMsg(w http.ResponseWriter, statusCode int) {
 func RootHandler(path string) http.Handler {
 	log.Printf("Initiating Root handler for path %s", path)
 	handler := func(w http.ResponseWriter, r *http.Request) {
-		setResponseCodeAndDefaultMsg(w, http.StatusOK)
+		setResponseCodeAndDefaultMsg(w, http.StatusNotFound)
 	}
 	return http.HandlerFunc(handler)
+}
+
+// PasswordHandlerID ... TODO
+func PasswordHandlerID(path string) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		id := strings.TrimPrefix(r.URL.Path, path)
+		log.Printf("ID %s, url path = %s", id, r.URL.Path)
+		w.Write([]byte(id))
+	}
+	return http.HandlerFunc(fn)
 }
 
 // PasswordHandler returns base64 value of the hashed password
 func PasswordHandler(path string) http.Handler {
 	log.Printf("Initiating Password hash handler %s", path)
 	fn := func(w http.ResponseWriter, request *http.Request) {
+		start := time.Now() // start timer
 
 		var err errorResponse
 		defer func() {
+
+			// TODO Add comments
+			elasped := time.Now().Sub(start) // calculate the total time elaspsed and call the stats handler
+			statsHandler.UpdateStats(elasped)
+
 			if r := recover(); r != nil {
 				switch t := r.(type) {
 				case string:
@@ -116,4 +134,24 @@ func ShutdownHandler(path string, done chan bool) http.Handler {
 		done <- true
 	}
 	return http.HandlerFunc(hanlder)
+}
+
+// GetStats ... TODO
+func GetStats(path string) http.Handler {
+	log.Printf("Initiating GetStats for path %s", path)
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		resp := statsHandler.GetStats()
+		rs, err := json.Marshal(resp)
+		log.Println(string(rs))
+
+		if err != nil {
+			log.Println("error...")
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(rs)
+	}
+	return http.HandlerFunc(fn)
 }
