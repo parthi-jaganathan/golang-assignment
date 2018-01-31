@@ -29,19 +29,32 @@ List of available service endpoints and their functionality
     - ```curl -X GET http://localhost:8080/shutdown```
     - Return OK and waits for the active requests to finish processing before gracefully shutting down the server
 
-# To get this project
+# To get the project
+
+This will download the project into your $HOME/go/src directory.
+
 ```
 go get github.com/pjaganathan/golang-assignment
 ```
+
 # To Run
 
-After getting the project and once you have the project in your $HOME/go/src directory, you can now run the below commands to start the server
+After getting the project you can now run the below commands in sequence to build and run the server
 
 ```
 cd $HOME/go/src/github.com/pjaganathan/golang-assignment
 go build
 go install
 $HOME/go/bin/golang-assignment
+
+```
+
+OR you can run directly from the golang-assignment checkout directory
+
+```
+cd $HOME/go/src/github.com/pjaganathan/golang-assignment
+go build
+./golang-assignment
 ```
 
 The server will run on port 8080 which is configured in main.go
