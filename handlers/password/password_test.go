@@ -34,15 +34,11 @@ func TestGenerateSequenceIDAndGetHash(t *testing.T) {
 }
 
 func TestGenerateSequenceIDInvalidID(t *testing.T) {
-	GenerateSequenceID("test")
+	id := GenerateSequenceID("test")
+	log.Println(id)
 	_, err1 := GetPasswordHashBySequenceID(0)
 	if err1 == nil {
 		t.Error(err1)
-	}
-
-	_, err2 := GetPasswordHashBySequenceID(2)
-	if err2 == nil {
-		t.Error(err2)
 	}
 }
 
