@@ -6,14 +6,14 @@ golang-assignment project provides a simple webserver that provides endpoints to
 
 List of available service endpoints and their functionality
 
-* Generate Sequence ID for getting password hash
+* Generate Sequence ID for a given password hash request
     - POST `/hash`
     - Payload format password={password}
     - ```curl -X POST -d "password=angryMonkey" http://localhost:8080/hash```
-    - The API returns an sequence Identifier
-    - The sequence Identifier can be used to retrieve the password Hash using the below endpoint
+    - The API returns an sequence ID
+    - The sequence ID can be used to retrieve the password hash using the below endpoint
     - Uses in memory map to track the sequence ID and password Hash
-* Retrieve has password using SequeceID
+* Retrieve password hash using Sequece ID from above endpoint
     - GET `/hash/{id}`
     - Use the sequence ID from the previous POST call to get the hash
     - ```curl -X GET http://localhost:8080/hash/2```
@@ -21,8 +21,8 @@ List of available service endpoints and their functionality
     - GET `/stats`
     - ```curl -X GET http://localhost:8080/stats```
     - Sample Response: { "total":4,"average":1250 }
-        - `total` -> total number of successful requests made to /hash and /hash{id} endpoints
-        - `average` -> captures the average response time for the endpoints /hash and /hash/{id} (successful requests) in milliseconds
+        - `total` -> total number of successful requests made to /hash and /hash/{id} endpoints
+        - `average` -> captures the average response time for the endpoints /hash and /hash/{id} in milliseconds (successful requests)
     - Uses in memory map to track the statictics
 * Graceful shutdown of the server
     - GET `/shutdown`
