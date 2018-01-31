@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"./handlers"
@@ -10,11 +11,17 @@ import (
 const (
 	address              = ":8080"
 	rootPath             = "/"
-	hashPasswordPath     = "/hash"
-	hashPasswordPathID   = "/hash/"
+	hashSequenceIDPath   = "/hash"
+	hashPasswordByIDPath = "/hash/"
 	gracefulShutdownPath = "/shutdown"
 	statsPath            = "/stats"
 )
+
+// servePath invokes servermux handle
+func servePath(pattern string, mux *http.ServeMux, handler http.Handler) {
+	log.Printf("Server listening to path %s", pattern)
+	mux.Handle(pattern, handler)
+}
 
 // main starts the server listening to different URL patterns and handles them
 func main() {
@@ -25,12 +32,21 @@ func main() {
 	}
 
 	shutdownServer := make(chan bool) // buffered channel
-	go shutdownHandler.GracefulShutdown(server, shutdownServer)
 
-	mux.Handle(rootPath, httphandler.RootHandler(rootPath))                                             // Application root handler
-	mux.Handle(hashPasswordPath, httphandler.PasswordHandler(hashPasswordPath))                         // Password Hash handler
-	mux.Handle(hashPasswordPathID, httphandler.PasswordHandlerID(hashPasswordPathID))                   // Password Hash handler
-	mux.Handle(gracefulShutdownPath, httphandler.ShutdownHandler(gracefulShutdownPath, shutdownServer)) // Graceful shutdown handler
-	mux.Handle(statsPath, httphandler.GetStats(statsPath))                                              // Stats path
-	server.ListenAndServe()                                                                             // make this a goroutine as its blocking?
+	servePath(rootPath, mux, httphandler.RootHandler())
+	servePath(hashSequenceIDPath, mux, httphandler.GenerateRequestSequenceID())                         // Generate Request SequenceId
+	servePath(hashPasswordByIDPath, mux, httphandler.GetPasswordHashBySequenceID(hashPasswordByIDPath)) // Get the Password Hash By request SequenceID
+	servePath(gracefulShutdownPath, mux, httphandler.ShutdownGracefully(shutdownServer))                // Graceful shutdown handler
+	servePath(statsPath, mux, httphandler.GetStats())                                                   // Stats path
+
+	go func() {
+		err := server.ListenAndServe()
+		if err != nil {
+			log.Println("something went wrong when starting server")
+			shutdownServer <- true
+		}
+	}()
+
+	// this will block until the channel receives shutdown server request
+	shutdownHandler.GracefulShutdown(server, shutdownServer)
 }

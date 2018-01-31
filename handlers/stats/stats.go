@@ -12,11 +12,11 @@ const (
 	tt = "total_time"
 )
 
-// statsSyncMap to be able to handle concurrency
-var statsSyncMap = struct {
+// statsSync to be able to handle concurrency
+var statsSync = struct {
 	sync.RWMutex
-	m map[string]int
-}{m: make(map[string]int)}
+	dataMap map[string]int
+}{dataMap: make(map[string]int)}
 
 // Stats of the Password Hash API, total requests and total response time
 type Stats struct {
@@ -26,41 +26,48 @@ type Stats struct {
 
 // UpdateStats updates the status map with the total time and increments the total requests - input value in nano seconds
 func UpdateStats(duration time.Duration) {
-
 	v := duration.Nanoseconds() / int64(time.Millisecond)
 	log.Println("total time in (ms)", v)
 
-	statsSyncMap.Lock()
-	totalRequests, _ := statsSyncMap.m[tr]
-	statsSyncMap.m[tr] = totalRequests + 1
+	statsSync.Lock() // lock the stats map before writing as we need to handle concurrent requests
+	totalRequests, _ := statsSync.dataMap[tr]
+	statsSync.dataMap[tr] = totalRequests + 1
 
-	totalTime, _ := statsSyncMap.m[tt]
-	statsSyncMap.m[tt] = totalTime + int(v)
+	totalTime, _ := statsSync.dataMap[tt]
+	statsSync.dataMap[tt] = totalTime + int(v)
 
-	statsSyncMap.Unlock()
+	statsSync.Unlock()
 }
 
-// GetStats ... TODO
+// GetStats return the Stats data with total requests to /hash and /hash/{id} endpoint and average response time
 func GetStats() *Stats {
 
 	var averageTime = 0
-	statsSyncMap.RLock()
-	totalRequests, ok := statsSyncMap.m[tr]
+	statsSync.RLock() // lock map before reading
+	totalRequests, ok := statsSync.dataMap[tr]
 	if !ok {
 		totalRequests = 0
 	}
 
-	totalTime, ok := statsSyncMap.m[tt]
+	totalTime, ok := statsSync.dataMap[tt]
 	log.Printf("total time %v, total request %v \n", totalTime, totalRequests)
 	if ok && totalRequests > 0 {
 		averageTime = totalTime / totalRequests
 	}
-	statsSyncMap.RUnlock()
+	statsSync.RUnlock()
 
 	resp := &Stats{
 		TotalRequests:       totalRequests,
 		AverageResponseTime: averageTime,
 	}
-
 	return resp
+}
+
+// TrackHashPasswordAPIMetrics should be called using defer and it needs to run at the end capturing the total time and updating the stats map
+func TrackHashPasswordAPIMetrics(start time.Time) {
+	fn := func() {
+		elasped := time.Now().Sub(start) // calculate the total time elaspsed and call the stats handler
+		UpdateStats(elasped)
+	}
+	fn()
 }
