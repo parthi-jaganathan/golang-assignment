@@ -27,6 +27,7 @@ const (
 	applicationJSON          = "application/json"
 )
 
+// setErrorResponse return http.Error based on the errorResponse input
 func setErrorResponse(w http.ResponseWriter, err errorResponse) {
 	const defaultStatusCode = http.StatusInternalServerError
 	if err.statusCode == 0 {
@@ -38,18 +39,18 @@ func setErrorResponse(w http.ResponseWriter, err errorResponse) {
 	http.Error(w, err.errorMessage, err.statusCode)
 }
 
-// setResponseCodeAndMsg
+// setResponseCodeAndMsg writes the given message and status code to the response
 func setResponseCodeAndCustomMsg(w http.ResponseWriter, statusCode int, message string) {
 	w.WriteHeader(statusCode)
 	w.Write([]byte(message))
 }
 
-// setResponseCodeAndMsg
+// setResponseCodeAndMsg writes the default status message and given status code to the response
 func setResponseCodeAndDefaultMsg(w http.ResponseWriter, statusCode int) {
 	setResponseCodeAndCustomMsg(w, statusCode, http.StatusText(statusCode))
 }
 
-// RootHandler return 404 for any request to root of the application
+// RootHandler return 404 for any request to root of the application or to the paths that are not configured to handle
 func RootHandler() http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		setResponseCodeAndDefaultMsg(w, http.StatusNotFound)
@@ -94,6 +95,7 @@ func GenerateRequestSequenceID() http.Handler {
 
 		var err errorResponse
 		defer func() {
+			// recover from any panic and handle them returning appropriate http status code and message
 			if r := recover(); r != nil {
 				switch t := r.(type) {
 				case string:
@@ -109,6 +111,7 @@ func GenerateRequestSequenceID() http.Handler {
 			}
 		}()
 
+		// ensure the request method is POST
 		if r.Method != http.MethodPost {
 			log.Printf("Requested method %s is not allowed", r.Method)
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -150,7 +153,7 @@ func GenerateRequestSequenceID() http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-// ShutdownGracefully accepts the request to graefully shutdown the server; Returns OK 201 immediately
+// ShutdownGracefully accepts the request to graefully shutdown the server; Returns 202 immediately
 func ShutdownGracefully(done chan bool) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 
