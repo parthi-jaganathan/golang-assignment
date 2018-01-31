@@ -1,6 +1,8 @@
 # GoLang WebServer
 
-golang-assignment project provides a simple webserver that runs on port 8080 and serves endpoints to hash password using SHA512
+My first Go Project.
+
+golang-assignment project provides a simple webserver that provides endpoints to hash password using SHA512 and get statictics about the hash endpoints
 
 List of available service endpoints and their functionality
 
@@ -26,4 +28,16 @@ List of available service endpoints and their functionality
 
 # To Get this assignment
 
-go get github.com/pjaganathan/golang-assignment
+> go get github.com/pjaganathan/golang-assignment
+
+# To Run
+
+Once you have the project in your $HOME/go/src directory, you can then do the below to run it
+
+> cd $HOME/go/src/github.com/pjaganathan/golang-assignment
+> go build
+> go install
+> $HOME/go/bin/golang-assignment
+
+The server will run on port 8080 which is configured in main.go
+
