@@ -21,8 +21,8 @@ List of available service endpoints and their functionality
     - GET `/stats`
     - ```curl -X GET http://localhost:8080/stats```
     - Sample Response: { "total":4,"average":1250 }
-        - total -> total number of successful requests made to /hash and /hash{id} endpoints
-        - average -> captures the average response time for the endpoints /hash and /hash/{id} (successful requests) in milliseconds
+        - `total` -> total number of successful requests made to /hash and /hash{id} endpoints
+        - `average` -> captures the average response time for the endpoints /hash and /hash/{id} (successful requests) in milliseconds
     - Uses in memory map to track the statictics
 * Graceful shutdown of the server
     - GET `/shutdown`
