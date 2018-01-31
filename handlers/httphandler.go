@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"../utils"
-	"./password"
-	"./stats"
+	"github.com/pjaganathan/golang-assignment/handlers/password"
+	"github.com/pjaganathan/golang-assignment/handlers/stats"
+	"github.com/pjaganathan/golang-assignment/utils"
 )
 
 type errorResponse struct {
