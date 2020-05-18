@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/pjaganathan/golang-assignment/handlers"
-	"github.com/pjaganathan/golang-assignment/handlers/shutdown"
+	"github.com/parthi-jaganathan/golang-assignment/handlers"
+	"github.com/parthi-jaganathan/golang-assignment/handlers/shutdown"
 )
 
 const (

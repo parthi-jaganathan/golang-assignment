@@ -34,7 +34,7 @@ List of available service endpoints and their functionality
 This will download the project into your $HOME/go/src directory.
 
 ```
-go get github.com/pjaganathan/golang-assignment
+go get github.com/parthi-jaganathan/golang-assignment
 ```
 
 # To Run
@@ -42,7 +42,7 @@ go get github.com/pjaganathan/golang-assignment
 After getting the project you can now run the below commands in sequence to build and run the server
 
 ```
-cd $HOME/go/src/github.com/pjaganathan/golang-assignment
+cd $HOME/go/src/github.com/parthi-jaganathan/golang-assignment
 go build
 go install
 $HOME/go/bin/golang-assignment
@@ -52,7 +52,7 @@ $HOME/go/bin/golang-assignment
 OR you can run directly from the golang-assignment checkout directory
 
 ```
-cd $HOME/go/src/github.com/pjaganathan/golang-assignment
+cd $HOME/go/src/github.com/parthi-jaganathan/golang-assignment
 go build
 ./golang-assignment
 ```
