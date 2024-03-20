@@ -1,3 +1,5 @@
 golang-assignment
 .idea/
 .vscode/
+bin/
+dist/

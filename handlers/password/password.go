@@ -25,7 +25,7 @@ var passHashSync = struct {
 }{dataMap: make(map[string]*hashData)}
 
 // GenerateSequenceID return a sequence id for the given request which can be used later on to retrieve the password hash
-// This method maintaints 2 maps; one with key as the sequence ID and another with key as the hash password
+// This method maintains 2 maps; one with key as the sequence ID and another with key as the hash password
 // Both the map holds the reference to the value avoiding duplicate data to be stored in the password hash map
 func GenerateSequenceID(password string) int {
 

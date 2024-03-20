@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	address              = ":8080"
+	address              = ":8081"
 	rootPath             = "/"
 	hashSequenceIDPath   = "/hash"
 	hashPasswordByIDPath = "/hash/"
