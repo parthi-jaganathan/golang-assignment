@@ -17,6 +17,7 @@ const (
 	statsPath            = "/stats"
 )
 
+// todo: add more paths;
 // servePath invokes servermux handle
 func servePath(pattern string, mux *http.ServeMux, handler http.Handler) {
 	log.Printf("Server listening to path %s", pattern)
